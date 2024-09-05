@@ -1,5 +1,8 @@
- 
-
+---
+title: "ITS2 Symtyping by Mapping Pipeline"
+author: "Jason A. Toy"
+date: "2024-09-05" 
+---
 ## Setup sample table and sample list
 
 ### Table format
