@@ -1,8 +1,10 @@
-# "ITS2 Symtyping by Mapping Pipeline"
-**Author:** Jason A. Toy
-**Date:** 2024-09-05" 
----
-## Setup sample table and sample list
+# ITS2 Sym-typing by Mapping Pipeline
+
+**Author:** Jason A. Toy  
+**Date:** 2024-09-05 <br><br>
+
+
+## Set up sample table and sample list
 
 ### Table format
 
@@ -552,9 +554,9 @@ local computer to run in Rstudio. Run the following R script:
 
  
 
-![](C:/Users/jason/OneDrive/Documents/odu/projects/global_search_genomics/pver_gwas/2024_pver_pilot_symbiont_total_counts_plot.png)
+![](2024_pver_pilot_symbiont_total_counts_plot.png)
 
-![](C:/Users/jason/OneDrive/Documents/odu/projects/global_search_genomics/pver_gwas/2024_pver_pilot_symbiont_proportions_plot.png)
+![](2024_pver_pilot_symbiont_proportions_plot.png)
  
 
 ### Results Summary
