@@ -167,6 +167,8 @@ Create array SLURM script to run fastp on all samples at once
         -j $BASEDIR/pver_gwas_pilot/reports/fastp_reports/${SAMPLE_UNIQ_ID}_fastp.json \
         --thread 20
 
+Run script:
+
     sbatch fastp_array.slurm
 
  
@@ -252,6 +254,8 @@ Then run array script `fastqc_array.slurm`:
 
     ## Run FastQC
     crun.fastqc fastqc -t 16 -o $OUTDIR $SEQDATA/$SAMPLEFILE
+
+Run script:
 
     sbatch $BASEDIR/scripts/fastqc_array.slurm
 
@@ -368,6 +372,8 @@ array job script, `its2_mapping_array.slurm`:
 
 
     # When the -k argument is used in bowtie2, the supplemental alignments (i.e. not the best alignment) are given a MAPQ score of 255. bowtie2 also reports unaligned reads in this mode with the YT:Z:UP code. To remove these unnecessary lines from the alignment file, the above samtools/grep command is used.
+
+Run script:
 
     sbatch its2_mapping_array.slurm
 
