@@ -162,6 +162,7 @@ Create array SLURM script to run fastp on all samples at once
         -O ${SAMPLETRIM}_r_paired_trim.fastq.gz \
         --adapter_fasta $BASEDIR/pver_gwas_pilot/adapters.fa \
         --cut_tail \
+        --trim_poly_g \
         -l 40 \
         -h $BASEDIR/pver_gwas_pilot/reports/fastp_reports/${SAMPLE_UNIQ_ID}_fastp.html \
         -j $BASEDIR/pver_gwas_pilot/reports/fastp_reports/${SAMPLE_UNIQ_ID}_fastp.json \
@@ -464,13 +465,7 @@ one column for each sample:
 
  
 
-You can run both of these in an array job using the script below. It is
-set up to be run from the directory containing the SAM files. Note that
-because all of the alignments are going to be multiply mapped, we want
-to first make sure the “columntoextract” variable in the
-`ParseExpression2BigTable_advbioinf.py` script is set to “4” and not
-“2”. Otherwise, it will only summarize the counts from the 2nd column
-and all entries will be 0.
+You can run these two steps using the script below. It is set up to be run from the directory containing the SAM files. Note that because the alignments may be multiply mapped, we want to first make sure the “columntoextract” variable in the `ParseExpression2BigTable_advbioinf.py` script is set to “4” (totalreadsgoodmapped) and not “2” (UniqueTotReads). Otherwise, it will only summarize the counts from the 2nd column and will therefore not include all mapped reads.
 
     module load container_env
     module load python2
