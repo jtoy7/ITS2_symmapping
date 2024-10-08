@@ -369,10 +369,10 @@ array job script, `its2_mapping_array.slurm`:
     ## Keep only best alignment (remove secondary alignments)
     module unload bowtie2
     module load container_env samtools
-    crun.samtools samtools view -@38 -h $SAMPLEOUT'_bt2_'$REFBASENAME'.sam' | grep -v "YT:Z:UP" | grep -vP "\s255\s" > $SAMPLEOUT'_bt2_'$REFBASENAME'_k1.bam'
+    crun.samtools samtools view -@38 -h -F 12 $SAMPLEOUT'_bt2_'$REFBASENAME'.sam' | grep -vP "\s255\s" > $SAMPLEOUT'_bt2_'$REFBASENAME'_k1.bam'
 
 
-    # When the -k argument is used in bowtie2, the supplemental alignments (i.e. not the best alignment) are given a MAPQ score of 255. bowtie2 also reports unaligned reads by default with the YT:Z:UP code. To remove these unnecessary lines from the alignment file, the above samtools/grep command is used.
+    # When the -k argument is used in bowtie2, the supplemental alignments (i.e. not the best alignment) are given a MAPQ score of 255. bowtie2 also reports unaligned reads by default. To remove these unnecessary lines from the alignment file, the above samtools/grep command is used. -F 12 is a combination of sam flag 4 (read is unmapped) and sam flag 8 (mate is unmapped), so it does not remove unaligned mates of aligned reads.
 
 Run script:
 
@@ -399,7 +399,7 @@ you will move forward with the single-alignment data set.
 
 If you have worked with the species/region previously and/or are limited on storage space, you can also just run the bowtie2 command without the -k option. This will use the default behavior which searches for distinct, valid alignments for each read. When it finds a valid alignment, it continues looking for alignments that are nearly as good or better. The best alignment found is reported (randomly selected from among best if tied). This will result in significantly smaller SAM files.
 
-`bowtie2` also reports unaligned reads by default with the `YT:Z:UP` code. In the script above they are removed with the `grep` command, but note that this may cause the bams to fail validation from programs like `ValidateSamFile` (GATK) if one of the reads of a pair aligned and the other did not (i.e., this will not maintain proper mate-pair information). The `--no-unal` option can also be used to omit these lines from the original SAM file.
+`bowtie2` also reports unaligned reads by default with the `YT:Z:UP` code. The samtools command in the above script removes these only if both reads in a pair are unmapped. This way if one of the reads of a pair aligned and the other did not, propper mate-pair information will be retained.
 
 
 ### Run array script `dedup_bams_array.slurm` to query-sort, deduplicate, and then coordinate-sort the merged bams:
