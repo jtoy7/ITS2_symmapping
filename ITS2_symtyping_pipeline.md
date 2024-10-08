@@ -404,6 +404,8 @@ If you have worked with the species/region previously and/or are limited on stor
 
 ### Run array script `dedup_bams_array.slurm` to query-sort, deduplicate, and then coordinate-sort the merged bams:
 
+MarkDuplicates can more accurately detect and remove duplicates when the input bam is query-sorted.
+
     #!/bin/bash
     
     #SBATCH --job-name dedup_merged_bams_array_2024-09-26
