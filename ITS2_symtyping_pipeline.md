@@ -369,7 +369,7 @@ array job script, `its2_mapping_array.slurm`:
     ## Keep only best alignment (remove secondary alignments)
     module unload bowtie2
     module load container_env samtools
-    crun.samtools samtools view -@38 -h $SAMPLEOUT'_bt2_'$REFBASENAME'.sam' | grep -v "YT:Z:UP" | grep -vP "\s255\s" > $SAMPLEOUT'_bt2_'$REFBASENAME'_k1.sam'
+    crun.samtools samtools view -@38 -h $SAMPLEOUT'_bt2_'$REFBASENAME'.sam' | grep -v "YT:Z:UP" | grep -vP "\s255\s" > $SAMPLEOUT'_bt2_'$REFBASENAME'_k1.bam'
 
 
     # When the -k argument is used in bowtie2, the supplemental alignments (i.e. not the best alignment) are given a MAPQ score of 255. bowtie2 also reports unaligned reads by default with the YT:Z:UP code. To remove these unnecessary lines from the alignment file, the above samtools/grep command is used.
@@ -401,7 +401,96 @@ If you have worked with the species/region previously and/or are limited on stor
 
 `bowtie2` also reports unaligned reads by default with the `YT:Z:UP` code. In the script above they are removed with the `grep` command, but note that this may cause the bams to fail validation from programs like `ValidateSamFile` (GATK) if one of the reads of a pair aligned and the other did not (i.e., this will not maintain proper mate-pair information). The `--no-unal` option can also be used to omit these lines from the original SAM file.
 
- 
+
+### Run array script `dedup_bams_array.slurm` to query-sort, deduplicate, and then coordinate-sort the merged bams:
+
+    #!/bin/bash
+    
+    #SBATCH --job-name dedup_merged_bams_array_2024-09-26
+    #SBATCH --output=%A_%a_%x.out
+    #SBATCH --error=%A_%a_%x.err
+    #SBATCH --mail-type=ALL
+    #SBATCH --mail-user=jtoy@odu.edu
+    #SBATCH --partition=main
+    #SBATCH --array=1-24%24
+    #SBATCH --ntasks=1
+    #SBATCH --mem=100G
+    #SBATCH --time 5-00:00:00
+    #SBATCH --cpus-per-task=16
+    
+    
+    ## Load modules
+    module load container_env
+    module load container_env gatk
+    GATK='crun.gatk gatk'
+    
+    ## Define some variables
+    BASEDIR=/cm/shared/courses/dbarshis/barshislab/jtoy
+    BAMDIR=$BASEDIR/pver_gwas_pilot/its2_mapping
+    OUTDIR=$BASEDIR/pver_gwas_pilot/its2_mapping/dedup_bams
+    SAMPLELIST=$BAMDIR/k1_bams_list.txt
+    
+    ## Keep a record of the Job ID
+    echo $SLURM_JOB_ID
+    
+    ## Select the SAMPLE from the SAMPLELIST
+    SAMPLEFILE=`head $SAMPLELIST -n $SLURM_ARRAY_TASK_ID | tail -n 1`
+    
+    ## Keep record of sample file
+    echo $SAMPLEFILE
+    
+    ## Make directory
+    mkdir -p $OUTDIR
+    
+    
+    ## Query-sort for duplicate removal with GATK
+    # Run SortSam to sort by query name and convert to BAM
+    $GATK --java-options "-Xmx100G" SortSam \
+      --INPUT $BAMDIR/$SAMPLEFILE \
+      --OUTPUT $BAMDIR/${SAMPLEFILE%.*}'_qsorted.bam' \
+      --SORT_ORDER queryname
+    
+    # Run validation of BAM file
+    $GATK --java-options "-Xmx100G" ValidateSamFile \
+      -I $BAMDIR/${SAMPLEFILE%.*}'_qsorted.bam' \
+      -O $BAMDIR/${SAMPLEFILE%.*}'_qsorted.val' \
+      -M VERBOSE
+    
+    ## Mark and remove duplicates
+    $GATK --java-options "-Xmx100G" MarkDuplicates \
+      -I $BAMDIR/${SAMPLEFILE%.*}'_qsorted.bam' \
+      -O $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup.bam' \
+      --METRICS_FILE $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dupstat.txt' \
+      --REMOVE_DUPLICATES true
+    
+    ## Run validation of BAM file
+    $GATK --java-options "-Xmx100G" ValidateSamFile \
+      -I $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup.bam' \
+      -O $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup.val' \
+      -M VERBOSE
+      
+    ## Remove qsorted BAM files to make space
+    rm $BAMDIR/${SAMPLEFILE%.*}'_qsorted.bam'
+    
+    ## Run SortSam to sort by coordinate for downstream processing
+    $GATK --java-options "-Xmx100G" SortSam \
+      --INPUT $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup.bam' \
+      --OUTPUT $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup_coordsorted.sam' \
+      --SORT_ORDER coordinate
+    
+    ## Run validation of coordinate-sorted BAM file
+    $GATK --java-options "-Xmx100G" ValidateSamFile \
+      -I $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup_coordsorted.sam' \
+      -O $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup_coordsorted.val' \
+      -M VERBOSE
+      
+    ## Remove qsorted deduped BAM files to make space
+    rm $OUTDIR/${SAMPLEFILE%.*}'_qsorted_dedup.bam'
+
+Run script:
+
+    sbatch dedup_bams_array.slurm
+
 
 To count reads and compile read counts, we will need to create a list of
 contigs (strain names) from the reference database:
@@ -435,7 +524,7 @@ every .sam file:
     module load container_env
     module load python2
 
-    crun.python2 python2 $BASEDIR/pver_gwas_pilot/scripts/countxpression_SB_advbioinf.py $BASEDIR/pver_gwas_pilot/its2_mapping/*k1.sam
+    crun.python2 python2 $BASEDIR/pver_gwas_pilot/scripts/countxpression_SB_advbioinf.py $BASEDIR/pver_gwas_pilot/its2_mapping/*k1_qsorted_dedup_coordsorted.sam
 
  
 
@@ -444,7 +533,7 @@ Compile counts files into one data file using
 
     cd $BASEDIR/its2_mapping
 
-    crun.python2 python2 ../scripts/ParseExpression2BigTable_advbioinf.py ../../references/its2_strain_names.txt pver_pilot_its2_counts_merged_filtered.txt no_match *k1_counts.txt
+    crun.python2 python2 ../scripts/ParseExpression2BigTable_advbioinf.py ../../references/its2_strain_names.txt pver_pilot_its2_counts_merged_filtered.txt no_match *coordsorted_counts.txt
 
         # Script usage:
           #sys.argv[1] Input file name            #list of your "gene" names (list must have a header line!)
@@ -476,10 +565,10 @@ You can run these two steps using the script below. It is set up to be run from 
 
     cd $BASEDIR/its2_mapping
 
-    crun.python2 python2 ../scripts/countxpression_SB_advbioinf.py *k1.sam
+    crun.python2 python2 ../scripts/countxpression_SB_advbioinf.py *k1_qsorted_dedup_coordsorted.sam
 
 
-    crun.python2 python2 ../scripts/ParseExpression2BigTable_advbioinf.py ../../references/its2_strain_names.txt pver_pilot_its2_counts_merged_filtered.txt no_match *k1_counts.txt
+    crun.python2 python2 ../scripts/ParseExpression2BigTable_advbioinf.py ../../references/its2_strain_names.txt pver_pilot_its2_counts_merged_filtered.txt no_match *coordsorted_counts.txt
 
         # Script usage:
           #sys.argv[1] Input file name #list of your "gene" names (list must have a header line!)
@@ -494,9 +583,7 @@ Convert .sam files to .bam files to save space:
     module load samtools
 
     for FILE in *.sam; do
-        BASENAME=`basename $FILE .sam`
-        echo $BASENAME
-        crun.samtools samtools view -Sb -@ 38 -O BAM -o $BASENAME.bam $FILE
+        crun.samtools samtools view -b -@ 38 -O BAM -o ${FILE%.*}.bam $FILE
     done
 
  
