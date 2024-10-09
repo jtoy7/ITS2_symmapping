@@ -369,10 +369,10 @@ array job script, `its2_mapping_array.slurm`:
     ## Keep only best alignment (remove secondary alignments)
     module unload bowtie2
     module load container_env samtools
-    crun.samtools samtools view -@38 -h -F 12 $SAMPLEOUT'_bt2_'$REFBASENAME'.sam' | grep -vP "\s255\s" > $SAMPLEOUT'_bt2_'$REFBASENAME'_k1.bam'
+    crun.samtools samtools view -@30 -h $SAMPLEOUT'_bt2_'$REFBASENAME'.sam' | awk '($1 ~ /^@/ || !($2 ~ /^(12|13|29|45|77|141|93|157|109|173)$/))' > $SAMPLEOUT'_bt2_'$REFBASENAME'_k1.bam'
 
 
-    # When the -k argument is used in bowtie2, the supplemental alignments (i.e. not the best alignment) are given a MAPQ score of 255. bowtie2 also reports unaligned reads by default. To remove these unnecessary lines from the alignment file, the above samtools/grep command is used. -F 12 is a combination of sam flag 4 (read is unmapped) and sam flag 8 (mate is unmapped), so it does not remove unaligned mates of aligned reads.
+    # When the -k argument is used in bowtie2, the supplemental alignments (i.e. not the best alignment) are given a MAPQ score of 255. bowtie2 also reports unaligned reads by default. To remove these unnecessary lines from the alignment file, the above samtools/awk command is used. The list of sam flags in the awk command includes all flags that contain BOTH the bit set 0x4 (read is unmapped) and 0x8 (mate is unmapped), so it does not remove unaligned mates of aligned reads.
 
 Run script:
 
