@@ -1,4 +1,4 @@
-# ITS2 Sym-typing by Mapping Pipeline
+# ITS2 Symbiont Profiling by Mapping Pipeline (Sym-Mapping)
 
 **Author:** Jason A. Toy  
 **Date:** 2024-09-05 <br><br>
