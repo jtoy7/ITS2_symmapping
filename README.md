@@ -1,6 +1,6 @@
 ITS2 Symbiont Profiling by Mapping Pipeline (Sym-Mapping)
 
-This pipeline extracts ITS2 sequences from whole genome resequencing (WGS) or RNA-Seq data and annotates them to the genus level based on similarity matching to ITS2 reference sequences from SymPortal (https://symportal.org/). This tool makes the most of non-targeted sequencing data and provides coarse-resolution symbiont information that can improve downstream analyses. Associated symbiont communities can be further resolved by using dedicated ITS2 sequencing analyses to derive ITS2 type profiles (e.g., using SymPortal (Github: https://github.com/reefgenomics/SymPortal_framework))
+This pipeline extracts ITS2 sequences from whole genome resequencing (WGS) or RNA-Seq data and annotates them to the genus level based on similarity matching to ITS2 reference sequences from SymPortal (https://symportal.org/). This tool makes the most of non-targeted sequencing data and provides coarse-resolution symbiont information that can improve downstream analyses. Associated symbiont communities can be further resolved by using dedicated ITS2 sequencing analyses to derive ITS2 type profiles (e.g., using SymPortal; https://github.com/reefgenomics/SymPortal_framework)
 
 See `ITS2_sym-mapping_pipeline.md` file for pipeline details and use.
 
