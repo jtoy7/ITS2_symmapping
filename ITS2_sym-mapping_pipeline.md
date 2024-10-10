@@ -528,7 +528,12 @@ every .sam file:
     module load container_env
     module load python2
 
-    crun.python2 python2 $BASEDIR/pver_gwas_pilot/scripts/countxpression_SB_advbioinf.py $BASEDIR/pver_gwas_pilot/its2_mapping/*k1_qsorted_dedup_coordsorted.sam
+    crun.python2 python2 $BASEDIR/pver_gwas_pilot/scripts/countmappedreads_JT.py -t 15 -l 40 -a 40 $BASEDIR/pver_gwas_pilot/its2_mapping/*k1_qsorted_dedup_coordsorted.sam
+
+Edit the filtering flags as you see fit:
+`-t` = MAPQ threshold (make sure you understand how bowtie2 calculates MAPQ - hint: it's not intuitive)
+`-l` = alignment length threshold
+`-a` = alignment score (AS) threshold
 
  
 
@@ -569,7 +574,7 @@ You can run these two steps using the script below. It is set up to be run from 
 
     cd $BASEDIR/its2_mapping
 
-    crun.python2 python2 ../scripts/countxpression_SB_advbioinf.py *k1_qsorted_dedup_coordsorted.sam
+    crun.python2 python2 ../scripts/countmappedreads_JT.py -t 15 -l 40 -a 40 $BASEDIR/pver_gwas_pilot/its2_mapping/*k1_qsorted_dedup_coordsorted.sam
 
 
     crun.python2 python2 ../scripts/ParseExpression2BigTable_advbioinf.py ../../references/its2_strain_names.txt pver_pilot_its2_counts_merged_filtered.txt no_match *coordsorted_counts.txt
@@ -664,19 +669,19 @@ local computer to run in Rstudio. Run the following R script:
 Sum of columns of the `pver_pilot_its2_counts_merged_filtered.txt`
 output file (mapped read totals for each sample):
 
-    Sum of column 2: 371
-    Sum of column 3: 408
-    Sum of column 4: 150
-    Sum of column 5: 48
-    Sum of column 6: 420
-    Sum of column 7: 84
-    Sum of column 8: 118
-    Sum of column 9: 144
-    Sum of column 10: 278
-    Sum of column 11: 106
-    Sum of column 12: 110
-    Sum of column 13: 272
-    Sum of column 14: 82
-    Sum of column 15: 245
-    Sum of column 16: 32
-    Sum of column 17: 63
+    Sum of column 2: 177
+    Sum of column 3: 184
+    Sum of column 4: 72
+    Sum of column 5: 17
+    Sum of column 6: 191
+    Sum of column 7: 40
+    Sum of column 8: 53
+    Sum of column 9: 70
+    Sum of column 10: 122
+    Sum of column 11: 46
+    Sum of column 12: 51
+    Sum of column 13: 130
+    Sum of column 14: 42
+    Sum of column 15: 114
+    Sum of column 16: 15
+    Sum of column 17: 31
