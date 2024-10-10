@@ -4,7 +4,7 @@
 **Date:** 2024-09-05 <br><br>
 
 ## DISCLAIMER:
-### This pipeline is still in development. Use at own risk. If you find issues, or have suggestions, pull requests are welcome.
+### This pipeline is still in development. Use at your own risk. If you find issues, or have suggestions, pull requests are welcome.
 
 ## Set up sample table and sample list
 
