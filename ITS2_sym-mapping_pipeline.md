@@ -108,6 +108,7 @@ Create array SLURM script to run fastp on all samples at once
 
     nano fastp_array.slurm
 
+###
     #!/bin/bash
 
     #SBATCH --job-name fastp_array_2024-07-22
