@@ -523,7 +523,7 @@ contigs (strain names) from the reference database:
  
 
 Count reads mapping to each contig (strain) using
-`countxpression_SB_advbioinf.py`. This will create a counts file for
+`countmappedreads_JT.py`. This will create a counts file for
 every .sam file:
 
     module load container_env
