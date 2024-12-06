@@ -293,7 +293,7 @@ holobiont genome.
 We will use a version of the SymPortal database that we edited to trim
 the end of the “I” clade sequences that were causing erroneous matches.
 This file was uploaded to my `references` directory and is called
-`Voolstra_SymPortal_published_div_20230315_Itrimmed.fasta`
+`Voolstra_SymPortal_published_div_20230315_Itrimmed.fasta`. You can download a copy from this repository.
 
 Now we need to index the database so we can map to it:
 
