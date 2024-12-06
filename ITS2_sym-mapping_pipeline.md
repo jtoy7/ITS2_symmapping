@@ -309,11 +309,12 @@ Now we need to index the database so we can map to it:
     #second argument is base name for index files that will be created
 
  
-
 Then map the trimmed fastq files to the reference using the following
 array job script, `its2_mapping_array.slurm`:
-
-**!! IMPORTANT NOTE - STOP AND READ !!**
+  
+ 
+    
+**!!! IMPORTANT NOTE - STOP AND READ !!!**
 
 There is a fork in the pipeline at this point with two options:
 
