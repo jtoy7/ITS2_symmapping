@@ -322,7 +322,8 @@ Comparing the results of the two will give you an idea of the level confidence y
 
 **Option 2)** If you have worked with your species/region previously and/or are limited on storage space, skip down to the [Streamlined Mapping Pipeline](#streamlined-mapping-pipeline) section. This version runs the bowtie2 command without the -k option. This will use the default behavior which searches for distinct, valid alignments for each read. When it finds a valid alignment, it continues looking for alignments that are nearly as good or better. The best alignment found is reported (randomly selected from among best if tied). This will result in significantly smaller SAM files. This version of the pipeline also combines the mapping and deduplication steps into a single script and automatically removes intermediate BAM files as it progresses, which saves significant time and storage space.
 
-`its2_mapping_array.slurm` (data exploration version):
+`its2_mapping_array.slurm` (Option 1 - data exploration version):
+    
     #!/bin/bash
 
     #SBATCH --job-name its2_mapping_array_2024-07-24
@@ -611,7 +612,9 @@ Convert .sam files to .bam files to save space:
 
  
 ## Streamlined Mapping Pipeline
-This version of the `its2_mapping_array.slurm` script combines both the mapping and deduplicating steps and streamlines/cleans up the process in other ways:
+This version of the `its2_mapping_array.slurm` script combines both the mapping and deduplicating steps and streamlines/cleans up the process in other ways.
+
+`its2_mapping_array.slurm` (Option 2 - streamlined version):
 
     #!/bin/bash
 
