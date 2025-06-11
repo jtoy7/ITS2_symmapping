@@ -284,7 +284,7 @@ duplication are generally much higher than fastp estimates.  
 
  
 
-## ITS2 symbiont typing
+## ITS2 symbiont mapping
 
 Before we can map the reads for downstream holobiont analyes, we need to
 know what symbiont clades are present so that we can create a combined
